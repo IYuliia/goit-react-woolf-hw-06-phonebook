@@ -1,20 +1,19 @@
-import { useState, useEffect } from 'react';
 import ContactForm from './ContactForm/ContactForm';
 import { ContactList } from './ContactList/ContactList';
 import { Filter } from './Filter/Filter';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  addContact,
+  deleteContact,
+  filterContacts,
+} from '../store/contactsSlice/slice';
 
 const App = () => {
-  const [contacts, setContacts] = useState(() => {
-    const savedContacts = localStorage.getItem('contacts');
-    return JSON.parse(savedContacts) || [];
-  });
-  const [filter, setFilter] = useState('');
+  const { contacts, filter } = useSelector(state => state.contacts);
+  const dispatch = useDispatch();
+  console.log(contacts);
 
-  useEffect(() => {
-    localStorage.setItem('contacts', JSON.stringify(contacts));
-  }, [contacts]);
-
-  const addContact = newContact => {
+  const addContactHandler = newContact => {
     const existingContact = contacts.find(
       contact => contact.name.toLowerCase() === newContact.name.toLowerCase()
     );
@@ -23,17 +22,15 @@ const App = () => {
       return;
     }
 
-    setContacts(prevContacts => [...prevContacts, newContact]);
+    dispatch(addContact(newContact));
   };
 
-  const deleteContact = id => {
-    setContacts(prevContacts =>
-      prevContacts.filter(contact => contact.id !== id)
-    );
+  const deleteContactHandler = id => {
+    dispatch(deleteContact(id));
   };
 
-  const filterContacts = value => {
-    setFilter(value);
+  const filterContactsHandler = value => {
+    dispatch(filterContacts(value));
   };
 
   const getFilteredContacts = () => {
@@ -56,14 +53,14 @@ const App = () => {
     >
       <div>
         <h1>Phonebook</h1>
-        <ContactForm addContact={addContact} />
+        <ContactForm addContact={addContactHandler} />
 
         <h2>Contacts</h2>
-        <Filter filterContacts={filterContacts} />
+        <Filter filterContacts={filterContactsHandler} />
         <ContactList
           contacts={getFilteredContacts()}
           filter={filter}
-          deleteContact={deleteContact}
+          deleteContact={deleteContactHandler}
         />
       </div>
     </div>
