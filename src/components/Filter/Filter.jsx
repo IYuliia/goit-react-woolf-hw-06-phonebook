@@ -1,10 +1,14 @@
 import React from 'react';
+import { useDispatch } from 'react-redux';
+import { filterContacts } from 'store/contactsSlice/slice';
 import styles from './Filter.module.css';
 
-export const Filter = ({ filterContacts }) => {
+export const Filter = () => {
+  const dispatch = useDispatch();
+
   const handleChange = e => {
     const value = e.target.value;
-    filterContacts(value);
+    dispatch(filterContacts(value));
   };
 
   return (
